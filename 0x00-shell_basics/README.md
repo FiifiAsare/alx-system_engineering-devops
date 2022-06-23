@@ -1,2 +1,9 @@
  #!/bin/bash
-/tmp/My_first_directory/alx-system_engineering-devops/0x00-shell_basics
+
+path=’readlink -f “${BASH_SOURCE:-$0}”’
+
+DIR_PATH=’dirname $path’
+
+echo ‘The absolute path is’ $path
+echo ‘---------------------------------------------’
+echo ‘The Directory Path is’ $DIR_PATH
