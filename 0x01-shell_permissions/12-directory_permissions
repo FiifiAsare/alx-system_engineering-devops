@@ -1,2 +1,3 @@
 #!/bin/bash
-chmod d u+wxr,g+x,o+x my_dir
+mkdir my_dir
+chmod u+xr,g+x,o+x my_dir
