@@ -1,2 +1,2 @@
 #!/bin/bahI
-printf "%x\n" $HEXADECIMAL
+printf "%x\n" $DECIMAL 
