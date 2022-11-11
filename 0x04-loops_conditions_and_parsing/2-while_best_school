@@ -6,5 +6,4 @@ while[$i -le 10]
 do
   echo "Best School"
      ((i++))
-
 done
