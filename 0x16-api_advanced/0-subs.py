@@ -1,4 +1,4 @@
-!#/bin/usr/python3
+#!/bin/usr/python3
 
 """number of subcribers for a given subreddit """
 
