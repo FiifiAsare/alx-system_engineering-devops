@@ -1,54 +1,35 @@
 #!/usr/bin/python3
-""" raddit api"""
-
-import json
+"""
+Script --> Query Reddit API recursively for
+all hot articles of a given subreddit;If no res are found;
+for the given subreddit, the function should return None.
+"""
 import requests
 
 
-def count_words(subreddit, word_list, after="", count=[]):
-    """count all words"""
+def recurse(subreddit, hot_list=[], aft="tmp"):
+    """
+        Return--> all hot articles for a given subreddit
+        &return; None if invalid subreddit given
+    """
+    headers = requests.utils.default_headers()
+    headers.update({'User-Agent': 'My User Agent 1.0'})
 
-    if after == "":
-        count = [0] * len(word_list)
+    # URL update--> each recursive call with param "aft"
+    URL = "https://www.reddit.com/r/{}/hot.json".format(subreddit)
+    if aft != "tmp":
+        URL = URL + "?aft={}".format(aft)
+    r = requests.get(URL, headers=headers, allow_redirects=False)
 
-    url = "https://www.reddit.com/r/{}/hot.json".format(subreddit)
-    request = requests.get(url,
-                           params={'after': after},
-                           allow_redirects=False,
-                           headers={'user-agent': 'bhalut'})
+    # append top titles to hot_list[]
+    res = r.json().get('data', {}).get('children', [])
+    if not res:
+        return hot_list
+    for i in res:
+        hot_list.append(i.get('data').get('title'))
 
-    if request.status_code == 200:
-        data = request.json()
-
-        for topic in (data['data']['children']):
-            for word in topic['data']['title'].split():
-                for i in range(len(word_list)):
-                    if word_list[i].lower() == word.lower():
-                        count[i] += 1
-
-        after = data['data']['after']
-        if after is None:
-            save = []
-            for i in range(len(word_list)):
-                for j in range(i + 1, len(word_list)):
-                    if word_list[i].lower() == word_list[j].lower():
-                        save.append(j)
-                        count[i] += count[j]
-
-            for i in range(len(word_list)):
-                for j in range(i, len(word_list)):
-                    if (count[j] > count[i] or
-                            (word_list[i] > word_list[j] and
-                             count[j] == count[i])):
-                        aux = count[i]
-                        count[i] = count[j]
-                        count[j] = aux
-                        aux = word_list[i]
-                        word_list[i] = word_list[j]
-                        word_list[j] = aux
-
-            for i in range(len(word_list)):
-                if (count[i] > 0) and i not in save:
-                    print("{}: {}".format(word_list[i].lower(), count[i]))
-        else:
-            count_words(subreddit, word_list, after, count)
+    # get next params "aft" else nothing to recurse
+    aft = r.json().get('data').get('aft')
+    if not aft:
+        return hot_list
+    return (recurse(subreddit, hot_list, aft))
